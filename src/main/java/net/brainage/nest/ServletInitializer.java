@@ -1,4 +1,4 @@
-package net.brainage;
+package net.brainage.nest;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
