@@ -18,14 +18,32 @@
  */
 package net.brainage.nest.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import net.brainage.nest.data.model.User;
+import net.brainage.nest.data.repository.UserRepository;
 import net.brainage.nest.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
+@Slf4j
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Override
+    public void create(User user) {
+        userRepository.save(user);
+    }
+
 }

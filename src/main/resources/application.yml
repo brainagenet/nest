@@ -5,11 +5,12 @@ spring:
       suffix: .jsp
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    # url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:file:./database/nestdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
-    password:
+    password: sa
   jpa:
-    generate-ddl: false
+    generate-ddl: true
     show-sql: true
     hibernate:
       ddl-auto: create
@@ -18,3 +19,5 @@ server:
   context-path: /nest
   tomcat:
     uri-encoding: UTF-8
+application:
+  allows-anonymous-access: true

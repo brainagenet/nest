@@ -18,14 +18,37 @@
  */
 package net.brainage.nest;
 
+import net.brainage.nuri.security.crypto.PBKDF2PasswordEncryptor;
+import net.brainage.nuri.security.crypto.PasswordEncryptor;
+import net.brainage.nuri.security.crypto.RandomNumberGenerator;
+import net.brainage.nuri.security.crypto.SecureRandomNumberGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+import java.util.Random;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 @SpringBootApplication
 public class NestApplication {
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
+	@Bean
+	public PasswordEncryptor passwordEncryptor() {
+		return new PBKDF2PasswordEncryptor();
+	}
+
+    @Bean
+    public RandomNumberGenerator passwordSaltGenerator() {
+        return new SecureRandomNumberGenerator();
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(NestApplication.class, args);

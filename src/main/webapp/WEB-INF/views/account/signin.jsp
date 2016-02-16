@@ -64,30 +64,32 @@
         <div class="col-md-6 col-md-offset-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <legend>Sign up</legend>
-                    <form id="signupForm" name="signupForm" action="<c:url value="/account/signup" />" method="post">
+                    <legend>Log in</legend>
+                    <form class="form-horizontal">
                         <div class="form-group">
-                            <label for="inputUsername">Username</label>
-                            <input type="text" name="username" class="form-control" id="inputUsername" placeholder="Username">
+                            <label for="inputUsername" class="col-sm-2 control-label">Username<span class="required">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputUsername" placeholder="Username">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="inputPassword">Password</label>
-                            <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password">
+                            <label for="inputPassword" class="col-sm-2 control-label">Password<span class="required">*</span></label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="inputName">Name</label>
-                            <input type="text" name="name" class="form-control" id="inputName" placeholder="Name">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary">Sign in</button>
+                                <a href="passwordReset.html">Forget your password?</a>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="inputEmail">Email</label>
-                            <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Email">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                Need an account? <a href="<c:url value="/account/signup" />">Sign up</a> free.
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
                     </form>
-                    <hr />
-                    <div class="pull-right">
-                        Already has an account? <a href="<c:url value="/account/signin" />">Sign in</a>
-                    </div>
                 </div>
             </div>
         </div>

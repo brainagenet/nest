@@ -25,4 +25,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /**
+     * username에 해당하는 사용자 정보 조회한다.
+     *
+     * @param username
+     * @return
+     */
+    User findByUsername(String username);
+
 }

@@ -20,8 +20,10 @@ package net.brainage.nest.data.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.brainage.nest.data.model.enums.UserState;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
@@ -36,9 +38,35 @@ public class User {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "username", nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(name = "password_salt", nullable = false)
     private String passwordSalt;
+
+    @Column(name = "otp_secret", nullable = true)
     private String otpSecret;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String email;
+
+    private String lang;
+
+    @Enumerated(EnumType.STRING)
+    private UserState state;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_on")
+    private Date createdOn;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_modified_on")
+    private Date lastModifiedOn;
 
 }

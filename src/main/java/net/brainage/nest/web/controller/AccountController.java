@@ -18,9 +18,15 @@
  */
 package net.brainage.nest.web.controller;
 
+import com.google.common.io.BaseEncoding;
 import lombok.extern.slf4j.Slf4j;
+import net.brainage.nest.data.model.User;
+import net.brainage.nest.data.model.enums.UserState;
+import net.brainage.nest.service.UserService;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
+import net.brainage.nuri.security.crypto.PasswordEncryptor;
+import net.brainage.nuri.security.crypto.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +34,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.concurrent.Callable;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
@@ -37,29 +48,73 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(path = {"/account"})
 public class AccountController {
 
+    @Value("${application.allows-anonymous-access}")
+    boolean allowsAnonymousAccess;
+
+    @Inject
+    PasswordEncryptor passwordEncryptor;
+
+    @Inject
+    RandomNumberGenerator passwordSaltGenerator;
+
+    @Inject
+    UserService userService;
+
     @RequestMapping(path = "/signup", method = RequestMethod.GET)
-    public String signupForm(Model model) {
-        return "account/signupForm";
+    public Callable<String> signupForm(Model model) {
+        return () -> {
+            model.addAttribute(new SignupForm());
+            return "account/signup";
+        };
     }
 
     @RequestMapping(path = "/signup", method = RequestMethod.POST)
-    public String signupAction(SignupForm form, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute(form);
-            return signinForm(model);
-        }
+    public Callable<String> signupAction(
+            SignupForm form, BindingResult result,
+            HttpServletRequest httpRequest, Model model) {
+        return () -> {
+            if (result.hasErrors()) {
+                model.addAttribute(form);
+                return signinForm(model);
+            }
 
-        // TODO: 2-factor authentication이 활성화 된다면 QR Code URI로 Redirect 한다.
-        boolean enable2FactorAuth = false;
-        if (enable2FactorAuth) {
-            return "redirect:/account/signup/opt/qrcode";
-        }
-        return "redirect:/account/signin";
+            if (log.isDebugEnabled()) {
+                log.debug("input signup form: {}", form.toString());
+            }
+
+            User user = new User();
+            user.setUsername(form.getUsername());
+
+            byte[] salt = passwordSaltGenerator.generate();
+            String passwordSalt = BaseEncoding.base64().encode(salt);
+            user.setPasswordSalt(passwordSalt);
+
+            String encryptedPassword = passwordEncryptor.encrypt(form.getPassword(), salt);
+            user.setPassword(encryptedPassword);
+
+            user.setName(form.getName());
+            user.setEmail(form.getEmail());
+            user.setState(UserState.LOCKED);
+            if (allowsAnonymousAccess) {
+                user.setState(UserState.ACTIVE);
+            }
+
+            user.setCreatedOn(new Date());
+            user.setLastModifiedOn(new Date());
+
+            if (log.isDebugEnabled()) {
+                log.debug("user: {}", user.toString());
+            }
+
+            userService.create(user);
+
+            return "redirect:/account/signin";
+        };
     }
 
     @RequestMapping(path = "/signin", method = RequestMethod.GET)
     public String signinForm(Model model) {
-        return "account/signinForm";
+        return "account/signin";
     }
 
     @RequestMapping(path = "/signin", method = RequestMethod.POST)

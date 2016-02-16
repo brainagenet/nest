@@ -1,5 +1,5 @@
 /*
- * (#) net.brainage.nest.web.form.SignupForm.java
+ * (#) net.brainage.nest.data.model.enums.UserState.java
  * Created on 2016-02-16
  *
  * Copyright 2015 brainage.net
@@ -16,39 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package net.brainage.nest.web.form;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Email;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+package net.brainage.nest.data.model.enums;
 
 /**
- * 회원가입 양식
- *
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
-@Data
-@NoArgsConstructor
-public class SignupForm {
-
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9-]+([_.][a-zA-Z0-9-]+)*$")
-    private String username;
-
-    @NotNull
-    private String password;
-
-    @NotNull
-    private String passwordConfirm;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    @Email
-    private String email;
-
+public enum UserState {
+    ACTIVE, LOCKED, DELETED;
 }

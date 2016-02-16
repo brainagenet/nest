@@ -2,6 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
     <logger name="net.brainage.nest" level="DEBUG" />
-    <logger name="jdbc" level="OFF" />
+    <logger name="org.springframework" level="DEBUG" />
+    <logger name="jdbc" level="DEBUG" />
     <logger name="jdbc.sqltiming" level="DEBUG" />
 </configuration>
