@@ -49,15 +49,6 @@ import java.util.concurrent.Callable;
 @RequestMapping(path = {"/account"})
 public class AccountController {
 
-    @Value("${application.allows-anonymous-access}")
-    boolean allowsAnonymousAccess;
-
-    @Inject
-    PasswordEncryptor passwordEncryptor;
-
-    @Inject
-    RandomNumberGenerator passwordSaltGenerator;
-
     @Inject
     UserService userService;
 
@@ -74,41 +65,24 @@ public class AccountController {
             SignupForm form, BindingResult result,
             HttpServletRequest httpRequest, Model model) {
         return () -> {
+            // Request Parameters에 대한 Validation Check를 수행한다.
             if (result.hasErrors()) {
                 model.addAttribute(form);
                 return signinForm(model);
             }
 
+            // TODO: username에 대한 중복검사를 수행한다.
+
             if (log.isDebugEnabled()) {
                 log.debug("input signup form: {}", form.toString());
             }
 
-            // TODO: Request Parameters에 대한 Validation Check를 수행한다.
-
-
-            // TODO; Form Object --> Domain Object에 Mapping한다.
-            // 다른 예와 같이 Assembly Util Class를 만드는 것도 고려해 보자.
-            // 아래와 같이 password salt 생성과 encryption의 경우, Service Layer로 넘기도록 하자.
-
+            // TODO: Form Object --> Domain Object에 Mapping한다.
             User user = new User();
             user.setUsername(form.getUsername());
-
-            byte[] salt = passwordSaltGenerator.generate();
-            String passwordSalt = BaseEncoding.base64().encode(salt);
-            user.setPasswordSalt(passwordSalt);
-
-            String encryptedPassword = passwordEncryptor.encrypt(form.getPassword(), salt);
-            user.setPassword(encryptedPassword);
-
+            user.setPassword(form.getPassword());
             user.setName(form.getName());
             user.setEmail(form.getEmail());
-            user.setState(UserState.LOCKED);
-            if (allowsAnonymousAccess) {
-                user.setState(UserState.ACTIVE);
-            }
-
-            user.setCreatedOn(new Date());
-            user.setLastModifiedOn(new Date());
 
             if (log.isDebugEnabled()) {
                 log.debug("user: {}", user.toString());
