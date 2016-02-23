@@ -25,6 +25,7 @@ import net.brainage.nest.data.model.enums.UserState;
 import net.brainage.nest.service.UserService;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
+import net.brainage.nest.web.util.HttpRequestUtils;
 import net.brainage.nuri.security.crypto.PasswordEncryptor;
 import net.brainage.nuri.security.crypto.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,6 +84,7 @@ public class AccountController {
             user.setPassword(form.getPassword());
             user.setName(form.getName());
             user.setEmail(form.getEmail());
+            user.setLang(HttpRequestUtils.getLanguage(httpRequest));
 
             if (log.isDebugEnabled()) {
                 log.debug("user: {}", user.toString());
