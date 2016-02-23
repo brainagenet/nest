@@ -26,6 +26,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.Random;
 
@@ -33,24 +38,41 @@ import java.util.Random;
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 @SpringBootApplication
-public class NestApplication {
+public class NestApplication extends WebMvcConfigurerAdapter {
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        configurer.setDefaultTimeout(10);
+        configurer.setTaskExecutor(asyncTaskExecutor());
+    }
+
+    @Bean
+    public AsyncTaskExecutor asyncTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(5);
+        taskExecutor.setMaxPoolSize(200);
+        taskExecutor.setQueueCapacity(100);
+        taskExecutor.setThreadNamePrefix("async-task-executor-");
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-	@Bean
-	public PasswordEncryptor passwordEncryptor() {
-		return new PBKDF2PasswordEncryptor();
-	}
+    @Bean
+    public PasswordEncryptor passwordEncryptor() {
+        return new PBKDF2PasswordEncryptor();
+    }
 
     @Bean
     public RandomNumberGenerator passwordSaltGenerator() {
         return new SecureRandomNumberGenerator();
     }
 
-	public static void main(String[] args) {
-		SpringApplication.run(NestApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(NestApplication.class, args);
+    }
 }
