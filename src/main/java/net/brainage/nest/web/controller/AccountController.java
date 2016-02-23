@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +82,13 @@ public class AccountController {
             if (log.isDebugEnabled()) {
                 log.debug("input signup form: {}", form.toString());
             }
+
+            // TODO: Request Parameters에 대한 Validation Check를 수행한다.
+
+
+            // TODO; Form Object --> Domain Object에 Mapping한다.
+            // 다른 예와 같이 Assembly Util Class를 만드는 것도 고려해 보자.
+            // 아래와 같이 password salt 생성과 encryption의 경우, Service Layer로 넘기도록 하자.
 
             User user = new User();
             user.setUsername(form.getUsername());
