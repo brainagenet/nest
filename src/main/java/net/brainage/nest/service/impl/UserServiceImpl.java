@@ -54,22 +54,35 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
     public void create(User user) {
         // generate password salt byte
         byte[] salt = passwordSaltGenerator.generate();
         // encoding to base64 string
         String passwordSalt = BaseEncoding.base64().encode(salt);
         user.setPasswordSalt(passwordSalt);
+        log.debug("user password salt: {}", passwordSalt);
 
         // encrypt password with salt for user
         String encryptedPassword = passwordEncryptor.encrypt(user.getPassword(), salt);
         user.setPassword(encryptedPassword);
+        log.debug("user encrypted password: {}", encryptedPassword);
 
         // set user state
         user.setState(UserState.LOCKED);
         if (allowsAnonymousAccess) {
             user.setState(UserState.ACTIVE);
         }
+        log.debug("user state: {}", user.getState());
 
         Date now = new Date();
         user.setCreatedOn(now);

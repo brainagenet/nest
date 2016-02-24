@@ -1,6 +1,6 @@
 /*
- * (#) net.brainage.nest.service.UserService.java
- * Created on 2016-02-15
+ * (#) net.brainage.nest.web.resource.ResultResource.java
+ * Created on 2016-02-24
  *
  * Copyright 2015 brainage.net
  *
@@ -16,24 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package net.brainage.nest.service;
+package net.brainage.nest.web.resource;
 
-import net.brainage.nest.data.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
-public interface UserService {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResultResource<T> {
 
-    boolean existsByUsername(String username);
-
-    boolean existsByEmail(String email);
-
-    /**
-     * 신규 사용자 정보를 추가합니다.
-     *
-     * @param user 신규 사용자 정보
-     */
-    void create(User user);
+    private T result;
 
 }

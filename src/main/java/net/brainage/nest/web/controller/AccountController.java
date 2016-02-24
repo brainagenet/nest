@@ -18,17 +18,13 @@
  */
 package net.brainage.nest.web.controller;
 
-import com.google.common.io.BaseEncoding;
 import lombok.extern.slf4j.Slf4j;
 import net.brainage.nest.data.model.User;
-import net.brainage.nest.data.model.enums.UserState;
 import net.brainage.nest.service.UserService;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
+import net.brainage.nest.web.resource.ResultResource;
 import net.brainage.nest.web.util.HttpRequestUtils;
-import net.brainage.nuri.security.crypto.PasswordEncryptor;
-import net.brainage.nuri.security.crypto.RandomNumberGenerator;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -36,10 +32,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.concurrent.Callable;
 
 /**
@@ -72,8 +68,6 @@ public class AccountController {
                 return signinForm(model);
             }
 
-            // TODO: username에 대한 중복검사를 수행한다.
-
             if (log.isDebugEnabled()) {
                 log.debug("input signup form: {}", form.toString());
             }
@@ -95,6 +89,33 @@ public class AccountController {
             return "redirect:/account/signin";
         };
     }
+
+    /**
+     * AJAX로 입력한 username의 중복확인을 한다.
+     *
+     * @param username
+     * @return
+     */
+    @RequestMapping(path = "/exists", params = {"username"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResultResource<Boolean> checkUsernameDuplication(@RequestParam(name = "username", required = true) String username) {
+        ResultResource<Boolean> result = new ResultResource<>(userService.existsByUsername(username));
+        return result;
+    }
+
+    /**
+     * AJAX로 입력한 email의 중복확인을 한다.
+     *
+     * @param email
+     * @return
+     */
+    @RequestMapping(path = "/exists", params = {"email"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResultResource<Boolean> checkEmailDuplication(@RequestParam(name = "email", required = true) String email) {
+        ResultResource<Boolean> result = new ResultResource<>(userService.existsByEmail(email));
+        return result;
+    }
+
 
     @RequestMapping(path = "/signin", method = RequestMethod.GET)
     public String signinForm(Model model) {
