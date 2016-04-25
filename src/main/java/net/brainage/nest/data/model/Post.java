@@ -1,6 +1,6 @@
 /*
- * (#) net.brainage.nest.web.form.SignupForm.java
- * Created on 2016-02-16
+ * (#) net.brainage.nest.data.model.Post.java
+ * Created on 2016-03-09
  *
  * Copyright 2015 brainage.net
  *
@@ -16,39 +16,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package net.brainage.nest.web.form;
+package net.brainage.nest.data.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Email;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 /**
- * 회원가입 양식
- *
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 @Data
-@NoArgsConstructor
-public class SignupForm {
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "posts")
+public class Post extends AuditableEntity {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    /**
+     * optimistic locking 대응
+     */
+    @Version
+    private int version;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9-]+([_.][a-zA-Z0-9-]+)*$")
-    private String username;
+    @Size(max = 255)
+    @Column(name = "title", nullable = false, length = 255)
+    private String title;
 
-    @NotNull
-    private String password;
-
-    @NotNull
-    private String passwordConfirm;
-
-    @NotNull
-    private String name;
-
-    @NotNull
-    @Email
-    private String email;
+    @Lob
+    @Column(name = "content", nullable = false)
+    private String content;
 
 }
