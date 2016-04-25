@@ -25,6 +25,10 @@ import net.brainage.nest.data.model.User;
  */
 public interface UserService {
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     /**
      * 신규 사용자 정보를 추가합니다.
      *

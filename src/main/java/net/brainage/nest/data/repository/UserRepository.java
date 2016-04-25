@@ -20,6 +20,8 @@ package net.brainage.nest.data.repository;
 
 import net.brainage.nest.data.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
@@ -33,5 +35,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return
      */
     User findByUsername(String username);
+
+    /**
+     * 입력한 username의 사용자가 있는지 확인한다.
+     *
+     * @param username 확인할 username
+     * @return username에 해당하는 사용자가 있으면 <code>true</code>, 없으면 <code>false</code>
+     */
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END From User u WHERE u.username = :username")
+    boolean existsByUsername(@Param("username") String username);
+
+    /**
+     * 입력한 email이 다른 사용자가 사용하고 있는지 확인한다.
+     *
+     * @param email 확인할 email address
+     * @return 입력한 email을 다른 사용자가 사용하고 있으면 <code>true</code>, 그렇지 않으면 <code>false</code>
+     */
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END From User u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
 
 }

@@ -18,16 +18,13 @@
  */
 package net.brainage.nest.web.controller;
 
-import com.google.common.io.BaseEncoding;
 import lombok.extern.slf4j.Slf4j;
 import net.brainage.nest.data.model.User;
-import net.brainage.nest.data.model.enums.UserState;
 import net.brainage.nest.service.UserService;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
-import net.brainage.nuri.security.crypto.PasswordEncryptor;
-import net.brainage.nuri.security.crypto.RandomNumberGenerator;
-import org.springframework.beans.factory.annotation.Value;
+import net.brainage.nest.web.resource.ResultResource;
+import net.brainage.nest.web.util.HttpRequestUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -35,10 +32,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.concurrent.Callable;
 
 /**
@@ -48,15 +45,6 @@ import java.util.concurrent.Callable;
 @Controller
 @RequestMapping(path = {"/account"})
 public class AccountController {
-
-    @Value("${application.allows-anonymous-access}")
-    boolean allowsAnonymousAccess;
-
-    @Inject
-    PasswordEncryptor passwordEncryptor;
-
-    @Inject
-    RandomNumberGenerator passwordSaltGenerator;
 
     @Inject
     UserService userService;
@@ -74,6 +62,7 @@ public class AccountController {
             SignupForm form, BindingResult result,
             HttpServletRequest httpRequest, Model model) {
         return () -> {
+            // Request Parameters에 대한 Validation Check를 수행한다.
             if (result.hasErrors()) {
                 model.addAttribute(form);
                 return signinForm(model);
@@ -83,32 +72,13 @@ public class AccountController {
                 log.debug("input signup form: {}", form.toString());
             }
 
-            // TODO: Request Parameters에 대한 Validation Check를 수행한다.
-
-
-            // TODO; Form Object --> Domain Object에 Mapping한다.
-            // 다른 예와 같이 Assembly Util Class를 만드는 것도 고려해 보자.
-            // 아래와 같이 password salt 생성과 encryption의 경우, Service Layer로 넘기도록 하자.
-
+            // TODO: Form Object --> Domain Object에 Mapping한다.
             User user = new User();
             user.setUsername(form.getUsername());
-
-            byte[] salt = passwordSaltGenerator.generate();
-            String passwordSalt = BaseEncoding.base64().encode(salt);
-            user.setPasswordSalt(passwordSalt);
-
-            String encryptedPassword = passwordEncryptor.encrypt(form.getPassword(), salt);
-            user.setPassword(encryptedPassword);
-
+            user.setPassword(form.getPassword());
             user.setName(form.getName());
             user.setEmail(form.getEmail());
-            user.setState(UserState.LOCKED);
-            if (allowsAnonymousAccess) {
-                user.setState(UserState.ACTIVE);
-            }
-
-            user.setCreatedOn(new Date());
-            user.setLastModifiedOn(new Date());
+            user.setLang(HttpRequestUtils.getLanguage(httpRequest));
 
             if (log.isDebugEnabled()) {
                 log.debug("user: {}", user.toString());
@@ -119,6 +89,33 @@ public class AccountController {
             return "redirect:/account/signin";
         };
     }
+
+    /**
+     * AJAX로 입력한 username의 중복확인을 한다.
+     *
+     * @param username
+     * @return
+     */
+    @RequestMapping(path = "/exists", params = {"username"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResultResource<Boolean> checkUsernameDuplication(@RequestParam(name = "username", required = true) String username) {
+        ResultResource<Boolean> result = new ResultResource<>(userService.existsByUsername(username));
+        return result;
+    }
+
+    /**
+     * AJAX로 입력한 email의 중복확인을 한다.
+     *
+     * @param email
+     * @return
+     */
+    @RequestMapping(path = "/exists", params = {"email"}, method = RequestMethod.GET)
+    @ResponseBody
+    public ResultResource<Boolean> checkEmailDuplication(@RequestParam(name = "email", required = true) String email) {
+        ResultResource<Boolean> result = new ResultResource<>(userService.existsByEmail(email));
+        return result;
+    }
+
 
     @RequestMapping(path = "/signin", method = RequestMethod.GET)
     public String signinForm(Model model) {
