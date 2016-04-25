@@ -29,9 +29,9 @@ import javax.validation.constraints.Size;
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 @Data
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "posts")
+//@Entity
+//@EntityListeners(AuditingEntityListener.class)
+//@Table(name = "posts")
 public class Post extends AuditableEntity {
 
     @Id
