@@ -19,7 +19,7 @@
 package net.brainage.nest.data.model;
 
 /**
- * Created by ms29.seo on 2016-05-02.
+ * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 public enum UserState {
 
