@@ -19,9 +19,13 @@
 package net.brainage.nest.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import net.brainage.nest.data.model.User;
 import net.brainage.nest.service.UserService;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
+import net.brainage.nest.web.util.HttpRequestUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:ms29.seo+ara@gmail.com">ms29.seo</a>
@@ -38,6 +43,9 @@ import javax.inject.Inject;
 @Controller
 @RequestMapping(path = {"/account"})
 public class AccountController {
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Inject
     private UserService userService;
@@ -57,12 +65,19 @@ public class AccountController {
     }
 
     @RequestMapping(path = {"/signup/"}, method = RequestMethod.POST)
-    public String signupAction(SignupForm signupForm, BindingResult result, Model model) {
+    public String signupAction(SignupForm signupForm, BindingResult result, HttpServletRequest request, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("signupForm", signupForm);
             return signupForm(model);
         }
-        return "redirect:/account/signin/";
+
+        User user = modelMapper.map(signupForm, User.class);
+        userService.createUser(user);
+
+        // get user lang from http request
+        user.setLang(HttpRequestUtils.getLanguage(request));
+
+        return "redirect:/account/signin/?next=/";
     }
 
     @RequestMapping(path = {"/signin/"}, method = RequestMethod.GET)

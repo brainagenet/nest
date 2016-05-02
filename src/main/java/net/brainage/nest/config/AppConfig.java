@@ -18,6 +18,10 @@
  */
 package net.brainage.nest.config;
 
+import net.brainage.nuri.security.crypto.PBKDF2PasswordEncryptor;
+import net.brainage.nuri.security.crypto.PasswordEncryptor;
+import net.brainage.nuri.security.crypto.RandomNumberGenerator;
+import net.brainage.nuri.security.crypto.SecureRandomNumberGenerator;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +35,16 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+
+    @Bean
+    public RandomNumberGenerator randomNumberGenerator() {
+        return new SecureRandomNumberGenerator();
+    }
+
+    @Bean
+    public PasswordEncryptor passwordEncryptor() {
+        return new PBKDF2PasswordEncryptor();
     }
 
 }

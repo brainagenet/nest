@@ -18,16 +18,21 @@
  */
 package net.brainage.nest.service.impl;
 
+import com.google.common.io.BaseEncoding;
 import lombok.extern.slf4j.Slf4j;
 import net.brainage.nest.data.model.User;
+import net.brainage.nest.data.model.UserState;
 import net.brainage.nest.data.repository.UserRepository;
 import net.brainage.nest.service.UserService;
+import net.brainage.nuri.security.crypto.PasswordEncryptor;
+import net.brainage.nuri.security.crypto.RandomNumberGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:ms29.seo+ara@gmail.com">ms29.seo</a>
@@ -40,9 +45,31 @@ public class UserServiceImpl implements UserService {
     @Inject
     private UserRepository userRepository;
 
+    @Inject
+    private RandomNumberGenerator randomNumberGenerator;
+
+    @Inject
+    private PasswordEncryptor passwordEncryptor;
+
     @Transactional(rollbackFor = Throwable.class)
-    public Long createUser(final User user) {
-        return null;
+    public void createUser(final User user) {
+        // created password salt
+        byte[] saltBytes = randomNumberGenerator.generate();
+        String passwordSalt = BaseEncoding.base64().encode(saltBytes);
+        user.setPasswordSalt(passwordSalt);
+
+        // encrypt password with salt
+        String encryptedPassword = passwordEncryptor.encrypt(user.getPassword(), saltBytes);
+        user.setPassword(encryptedPassword);
+
+        // set user state
+        user.setState(UserState.ACTIVE);
+
+        Date now = new Date();
+        user.setCreatedOn(now);
+        user.setLastModifiedOn(now);
+
+        userRepository.save(user);
     }
 
 

@@ -18,8 +18,11 @@
  */
 package net.brainage.nest.service;
 
+import net.brainage.nest.data.model.User;
+
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
  */
 public interface UserService {
+    void createUser(User user);
 }
