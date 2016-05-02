@@ -8,7 +8,12 @@
 </head>
 <body>
 
-<h3><c:out value="${title}" /></h3>
+<h3>Welcom ${title}</h3>
+
+<p>
+    <a href="<c:url value="/account/signin/?next=/" />">Log in</a>
+    | Need an account? <a href="<c:url value="/account/signup/" />">Sign up</a>.
+</p>
 
 </body>
 
