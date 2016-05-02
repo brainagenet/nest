@@ -71,11 +71,14 @@ public class AccountController {
             return signupForm(model);
         }
 
+        // -------------------------------------------------------------
+        // convert dto to entity
+        // -------------------------------------------------------------
         User user = modelMapper.map(signupForm, User.class);
-        userService.createUser(user);
-
         // get user lang from http request
         user.setLang(HttpRequestUtils.getLanguage(request));
+        // save new user
+        userService.createUser(user);
 
         return "redirect:/account/signin/?next=/";
     }

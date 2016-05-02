@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         user.setPasswordSalt(passwordSalt);
 
         // encrypt password with salt
+        log.debug("plain password: {}", user.getPassword());
         String encryptedPassword = passwordEncryptor.encrypt(user.getPassword(), saltBytes);
         user.setPassword(encryptedPassword);
 
