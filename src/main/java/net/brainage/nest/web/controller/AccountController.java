@@ -21,6 +21,8 @@ package net.brainage.nest.web.controller;
 import lombok.extern.slf4j.Slf4j;
 import net.brainage.nest.data.model.User;
 import net.brainage.nest.service.UserService;
+import net.brainage.nest.service.UserNotAuthenticatedException;
+import net.brainage.nest.service.UserNotFoundException;
 import net.brainage.nest.web.form.SigninForm;
 import net.brainage.nest.web.form.SignupForm;
 import net.brainage.nest.web.util.HttpRequestUtils;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author <a href="mailto:ms29.seo+ara@gmail.com">ms29.seo</a>
@@ -96,12 +99,23 @@ public class AccountController {
     public String signinAction(SigninForm signinForm,
                                BindingResult result,
                                @RequestParam(required = false, defaultValue = "/") String next,
+                               HttpServletRequest request,
                                Model model) {
         if (result.hasErrors()) {
             model.addAttribute("signinForm", signinForm);
             return signinForm(next, model);
         }
-        return String.format("redirect:%s", next);
+        try {
+            User user = userService.authenticat(signinForm.getUsername(), signinForm.getPassword());
+            HttpSession session = request.getSession(true);
+            session.setAttribute("auth.user", user);
+            return String.format("redirect:/%s", next);
+        } catch (UserNotFoundException | UserNotAuthenticatedException ex) {
+            model.addAttribute("error.auth.message", ex.getMessage());
+            model.addAttribute("error.auth.exception", ex);
+            log.error("exception: {}", ex.getMessage());
+            return signinForm(next, model);
+        }
     }
 
     @RequestMapping(path = {"/password/reset/"}, method = RequestMethod.GET)
@@ -115,6 +129,5 @@ public class AccountController {
             Model model) {
         return "account/password/reset";
     }
-
 
 }

@@ -25,4 +25,6 @@ import net.brainage.nest.data.model.User;
  */
 public interface UserService {
     void createUser(User user);
+
+    User authenticat(String username, String username1);
 }

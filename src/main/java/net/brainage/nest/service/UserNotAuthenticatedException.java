@@ -1,6 +1,6 @@
 /*
- * (#) net.brainage.nest.web.form.SigninForm.java
- * Created on 2016-05-02
+ * (#) net.brainage.nest.service.UserNotAuthenticatedException.java
+ * Created on 2016-05-03
  *
  * Copyright 2015 brainage.net
  *
@@ -16,27 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package net.brainage.nest.web.form;
+package net.brainage.nest.service;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import net.brainage.nest.core.NestException;
 
 /**
  * @author <a href="mailto:ms29.seo+ara@gmail.com">ms29.seo</a>
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class SigninForm {
+public class UserNotAuthenticatedException extends NestException {
 
-    @NotNull
-    private String username;
+    private final String username;
 
-    @NotNull
-    private String password;
+    public UserNotAuthenticatedException(String username) {
+        super("User for '' dose not authenticate. Please check username and password.");
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 
 }

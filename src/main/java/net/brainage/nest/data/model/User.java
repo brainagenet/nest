@@ -30,7 +30,11 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(name = "UK_USERS_USERNAME", columnNames = {"username"})})
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_USERS_USERNAME", columnNames = {"username"}),
+                @UniqueConstraint(name = "UK_USERS_EMAIL", columnNames = {"email"})
+        })
 public class User {
 
     @Id

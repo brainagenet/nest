@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.brainage.nest.data.model.User;
 import net.brainage.nest.data.model.UserState;
 import net.brainage.nest.data.repository.UserRepository;
+import net.brainage.nest.service.UserNotAuthenticatedException;
+import net.brainage.nest.service.UserNotFoundException;
 import net.brainage.nest.service.UserService;
 import net.brainage.nuri.security.crypto.PasswordEncryptor;
 import net.brainage.nuri.security.crypto.RandomNumberGenerator;
@@ -73,5 +75,24 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public User authenticat(String username, String rawPassword) {
+        User user = userRepository.findByUsername(username);
+        if (user == null && username.indexOf('@') > 0) {
+            user = userRepository.findByEmail(username);
+        }
+
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
+
+        String salt = user.getPasswordSalt();
+        log.debug("user password salt: {}", salt);
+        if (passwordEncryptor.matchs(rawPassword, user.getPassword(), BaseEncoding.base64().decode(salt))) {
+            log.debug("password matched....");
+            return user;
+        }
+        throw new UserNotAuthenticatedException(username);
+    }
 
 }

@@ -39,7 +39,7 @@ public class AppConfig {
 
     @Bean
     public RandomNumberGenerator randomNumberGenerator() {
-        return new SecureRandomNumberGenerator();
+        return new SecureRandomNumberGenerator(16);
     }
 
     @Bean
