@@ -8,7 +8,7 @@ spring:
     hibernate:
       ddl-auto: update
     generate-ddl: false
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   datasource:
     pool-name: "hikari-db-pool"
     hikari.data-source-class-name: org.mariadb.jdbc.MySQLDataSource
