@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:ms29.seo@gmail.com">ms29.seo</a>
@@ -32,9 +33,10 @@ import java.util.Date;
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(name = "UK_USERS_USERNAME", columnNames = {"username"}),
-                @UniqueConstraint(name = "UK_USERS_EMAIL", columnNames = {"email"})
-        })
+            @UniqueConstraint(name = "UK_USERS_USERNAME", columnNames = {"username"}),
+            @UniqueConstraint(name = "UK_USERS_EMAIL", columnNames = {"email"})
+        }
+)
 public class User {
 
     @Id
@@ -69,5 +71,8 @@ public class User {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedOn;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserRole> roles;
 
 }

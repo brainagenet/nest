@@ -95,6 +95,7 @@ public class AccountController {
         return "account/signin";
     }
 
+    /*
     @RequestMapping(path = {"/signin/"}, method = RequestMethod.POST)
     public String signinAction(SigninForm signinForm,
                                BindingResult result,
@@ -117,6 +118,7 @@ public class AccountController {
             return signinForm(next, model);
         }
     }
+    */
 
     @RequestMapping(path = {"/password/reset/"}, method = RequestMethod.GET)
     public String passwordResetForm(Model model) {
