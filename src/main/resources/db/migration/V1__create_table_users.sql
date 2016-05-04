@@ -1,0 +1,17 @@
+CREATE TABLE users (
+    id BIGINT(20) NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    password_salt VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    lang VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    created_on DATETIME NOT NULL,
+    last_modified_on DATETIME NULL DEFAULT NULL,
+    PRIMARY KEY (id),
+    UNIQUE INDEX UK_USERS_USERNAME (username),
+    UNIQUE INDEX UK_USERS_EMAIL (email)
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB;

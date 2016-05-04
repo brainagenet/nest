@@ -10,16 +10,16 @@ spring:
       suffix: ".jsp"
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: update
     generate-ddl: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: validate
   datasource:
     pool-name: "hikari-db-pool"
-    hikari.data-source-class-name: org.mariadb.jdbc.MySQLDataSource
     url: "jdbc:mariadb://localhost:3306/nestdb"
     username: "nest"
     password: "!nest#12"
+    hikari.data-source-class-name: org.mariadb.jdbc.MySQLDataSource
     hikari.maximum-pool-size: 20
     hikari.connection-timeout: 10
     hikari.max-lifetime: 1800000
