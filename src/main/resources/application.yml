@@ -1,3 +1,8 @@
+server:
+  port: 9090
+  context-path: "/nest"
+  tomcat:
+    uri-encoding: utf-8
 spring:
   mvc:
     view:
@@ -22,8 +27,6 @@ spring:
     hikari.prep-stmt-cache-size: 250
     hikari.prep-stmt-cache-sql-limit: 2048
     hikari.connection-test-query: select 1
-server:
-  port: 9090
-  context-path: "/nest"
-  tomcat:
-    uri-encoding: utf-8
+security:
+  basic:
+    enabled: false
